@@ -1,0 +1,270 @@
+PImage backgroundImg;
+PImage mexicoImg;
+PImage greeceImg;
+PImage brazilImg;
+PImage switzerlandImg;
+
+PImage[] mexicoImages;
+PImage[] greeceImages;
+PImage[] brazilImages;
+PImage[] switzerlandImages;
+int currentImageIndex;
+int transitionDelay = 1000;
+boolean transitioning = false;
+int transitionStartTime;
+
+int flagSize = 80;
+int overlap = 20;
+
+int state = 0;
+final int STATE_HOME = 0;
+final int STATE_MEXICO = 1;
+final int STATE_GREECE = 2;
+final int STATE_BRAZIL = 3;
+final int STATE_SWITZERLAND = 4;
+
+void setup() {
+  size(800, 437);
+
+  backgroundImg = loadImage("earth.jpg");
+  mexicoImg = loadImage("mexico.jpg");
+  greeceImg = loadImage("greece.jpg");
+  brazilImg = loadImage("brazil.jpg");
+  switzerlandImg = loadImage("switzerland.jpg");
+
+  // flag images
+  mexicoImg = resizeImage(mexicoImg, flagSize);
+  greeceImg = resizeImage(greeceImg, flagSize);
+  brazilImg = resizeImage(brazilImg, flagSize);
+  switzerlandImg = resizeImage(switzerlandImg, flagSize);
+
+  //  images for Mexico
+  mexicoImages = new PImage[7];
+  mexicoImages[0] = loadImage("mexiconopal.jpg");
+  mexicoImages[1] = loadImage("mexicowalk.jpg");
+  mexicoImages[2] = loadImage("mexicowater.jpg");
+  mexicoImages[3] = loadImage("mexicohouses.jpg");
+  mexicoImages[4] = loadImage("mexicoalley.jpg");
+  mexicoImages[5] = loadImage("mexicobeach.jpg");
+  mexicoImages[6] = loadImage("mexicostreet.jpg");
+
+  for (int i = 0; i < mexicoImages.length; i++) {
+    mexicoImages[i] = resizeImage(mexicoImages[i], width - overlap * 2, height - overlap * 2);
+  }
+
+  //  images for Greece
+  greeceImages = new PImage[7];
+  greeceImages[0] = loadImage("greecebuilding.jpg");
+  greeceImages[1] = loadImage("greecehouse.jpg");
+  greeceImages[2] = loadImage("greecewater.jpg");
+  greeceImages[3] = loadImage("greecestreet.jpg");
+  greeceImages[4] = loadImage("greeceview.jpg");
+  greeceImages[5] = loadImage("greeceroad.jpg");
+  greeceImages[6] = loadImage("greeceboat.jpg");
+
+  // Resize the new images and overlap them
+  for (int i = 0; i < greeceImages.length; i++) {
+    greeceImages[i] = resizeImage(greeceImages[i], width - overlap * 2, height - overlap * 2);
+  }
+
+  //images for Brazil
+  brazilImages = new PImage[7];
+  brazilImages[0] = loadImage("brazilview.jpg");
+  brazilImages[1] = loadImage("brazilfruit.jpg");
+  brazilImages[2] = loadImage("brazilbird.jpg");
+  brazilImages[3] = loadImage("brazilwater.jpg");
+  brazilImages[4] = loadImage("brazilstatue.jpg");
+  brazilImages[5] = loadImage("brazilshore.jpg");
+  brazilImages[6] = loadImage("brazilvolcano.jpg");
+
+  for (int i = 0; i < brazilImages.length; i++) {
+    brazilImages[i] = resizeImage(brazilImages[i], width - overlap * 2, height - overlap * 2);
+  }
+
+  // images for Switzerland
+  switzerlandImages = new PImage[7];
+  switzerlandImages[0] = loadImage("switview.jpg");
+  switzerlandImages[1] = loadImage("switview2.jpg");
+  switzerlandImages[2] = loadImage("switwater.jpg");
+  switzerlandImages[3] = loadImage("switmountain.jpg");
+  switzerlandImages[4] = loadImage("switcow.jpg");
+  switzerlandImages[5] = loadImage("swithouses.jpg");
+  switzerlandImages[6] = loadImage("switview3.jpg");
+
+  for (int i = 0; i < switzerlandImages.length; i++) {
+    switzerlandImages[i] = resizeImage(switzerlandImages[i], width - overlap * 2, height - overlap * 2);
+  }
+
+  textAlign(CENTER, CENTER);
+  textSize(32);
+}
+
+void draw() {
+  if (state == STATE_HOME) {
+    drawHomeScreen();
+  } else if (state == STATE_MEXICO) {
+    if (transitioning) {
+      int elapsedTime = millis() - transitionStartTime;
+      if (elapsedTime > transitionDelay) {
+        currentImageIndex++;
+        if (currentImageIndex >= mexicoImages.length) {
+          transitioning = false;
+        } else {
+          transitionStartTime = millis();
+        }
+      }
+    }
+    drawLocationScreen("Mexico", transitioning ? mexicoImages[currentImageIndex] : mexicoImg);
+  } else if (state == STATE_GREECE) {
+    if (transitioning) {
+      int elapsedTime = millis() - transitionStartTime;
+      if (elapsedTime > transitionDelay) {
+        currentImageIndex++;
+        if (currentImageIndex >= greeceImages.length) {
+          transitioning = false;
+        } else {
+          transitionStartTime = millis();
+        }
+      }
+    }
+    drawLocationScreen("Greece", transitioning ? greeceImages[currentImageIndex] : greeceImg);
+  } else if (state == STATE_BRAZIL) {
+    if (transitioning) {
+      int elapsedTime = millis() - transitionStartTime;
+      if (elapsedTime > transitionDelay) {
+        currentImageIndex++;
+        if (currentImageIndex >= brazilImages.length) {
+          transitioning = false;
+        } else {
+          transitionStartTime = millis();
+        }
+      }
+    }
+    drawLocationScreen("Brazil", transitioning ? brazilImages[currentImageIndex] : brazilImg);
+  } else if (state == STATE_SWITZERLAND) {
+    if (transitioning) {
+      int elapsedTime = millis() - transitionStartTime;
+      if (elapsedTime > transitionDelay) {
+        currentImageIndex++;
+        if (currentImageIndex >= switzerlandImages.length) {
+          transitioning = false;
+        } else {
+          transitionStartTime = millis();
+        }
+      }
+    }
+    drawLocationScreen("Switzerland", transitioning ? switzerlandImages[currentImageIndex] : switzerlandImg);
+  }
+}
+
+void mouseClicked() {
+  if (state == STATE_HOME) {
+    int numFlags = 4;
+    int spacing = (width - (numFlags * flagSize)) / (numFlags + 1);
+    int flagX = spacing;
+
+    if (mouseX > flagX && mouseX < flagX + flagSize && mouseY > height/2 && mouseY < height/2 + flagSize) {
+      state = STATE_MEXICO;
+      transitioning = true;
+      transitionStartTime = millis();
+      currentImageIndex = 0;
+    } else {
+      flagX += flagSize + spacing;
+      if (mouseX > flagX && mouseX < flagX + flagSize && mouseY > height/2 && mouseY < height/2 + flagSize) {
+        state = STATE_GREECE;
+        transitioning = true;
+        transitionStartTime = millis();
+        currentImageIndex = 0;
+      } else {
+        flagX += flagSize + spacing;
+        if (mouseX > flagX && mouseX < flagX + flagSize && mouseY > height/2 && mouseY < height/2 + flagSize) {
+          state = STATE_BRAZIL;
+          transitioning = true;
+          transitionStartTime = millis();
+          currentImageIndex = 0;
+        } else {
+          flagX += flagSize + spacing;
+          if (mouseX > flagX && mouseX < flagX + flagSize && mouseY > height/2 && mouseY < height/2 + flagSize) {
+            state = STATE_SWITZERLAND;
+            transitioning = true;
+            transitionStartTime = millis();
+            currentImageIndex = 0;
+          }
+        }
+      }
+    }
+  } else {
+    state = STATE_HOME;
+  }
+}
+
+void drawHomeScreen() {
+  background(backgroundImg);
+  fill(255);
+  text("Where would you like to travel to?", width/2, 50);
+
+  int numFlags = 4;
+  int spacing = (width - (numFlags * flagSize)) / (numFlags + 1);
+  int flagX = spacing;
+
+  if (mouseX > flagX && mouseX < flagX + flagSize && mouseY > height/2 && mouseY < height/2 + flagSize) {
+    tint(255, 200);
+  } else {
+    noTint();
+  }
+  image(mexicoImg, flagX, height/2);
+
+  flagX += flagSize + spacing;
+  if (mouseX > flagX && mouseX < flagX + flagSize && mouseY > height/2 && mouseY < height/2 + flagSize) {
+    tint(255, 200);
+  } else {
+    noTint();
+  }
+  image(greeceImg, flagX, height/2);
+
+  flagX += flagSize + spacing;
+  if (mouseX > flagX && mouseX < flagX + flagSize && mouseY > height/2 && mouseY < height/2 + flagSize) {
+    tint(255, 200);
+  } else {
+    noTint();
+  }
+  image(brazilImg, flagX, height/2);
+
+  flagX += flagSize + spacing;
+  if (mouseX > flagX && mouseX < flagX + flagSize && mouseY > height/2 && mouseY < height/2 + flagSize) {
+    tint(255, 200);
+  } else {
+    noTint();
+  }
+  image(switzerlandImg, flagX, height/2);
+
+  noTint();
+}
+
+void drawLocationScreen(String location, PImage image) {
+  background(178, 215, 232);
+  fill(0);
+  text("You made it to " + location, width/2, 50);
+
+  float flagX = width / 2 - image.width / 2;
+  float flagY = height / 2 - image.height / 2;
+
+  image(image, flagX, flagY);
+}
+
+
+PImage resizeImage(PImage img, int newSize) {
+  img.resize(newSize, 0);
+  return img;
+}
+
+PImage resizeImage(PImage img, int newWidth, int newHeight) {
+  img.resize(newWidth, newHeight);
+  return img;
+}
+
+void keyPressed() {
+  if (key == 'r' || key == 'R') {
+    state = STATE_HOME;
+  }
+}
